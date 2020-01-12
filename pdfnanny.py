@@ -1,28 +1,30 @@
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-import pdftotext
+import PyPDF2
 from gtts import gTTS
 
-Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
-filelocation = askopenfilename() # open the dialog GUI
+Tk().withdraw()
+filelocation = askopenfilename()
 
 print("Opening {}".format(filelocation))
 
-with open(filelocation, "rb") as f:  # open the file in reading (rb) mode and call it f
-    pdf = pdftotext.PDF(f)  # store a text version of the pdf file f in pdf variable
+with open(filelocation, "rb") as f:
+    pdfReader = PyPDF2.PdfFileReader(f)
 
-print("File correctly read.")
+    print("File correctly read.")
 
-string_of_text = ''
-for text in pdf:
-    string_of_text += text
+    string_of_text = ''
+    pages = pdfReader.numPages
 
-print("{}".format(string_of_text[0:79]))
+    for page in range(0, pages):
+        string_of_text += pdfReader.getPage(page).extractText()
 
-final_file = gTTS(text=string_of_text, lang='en')  # store file in variable
+    print("{}".format(string_of_text[0:79]))
 
-print("Audiofile generated. Saving...")
+    final_file = gTTS(text=string_of_text, lang='en')
 
-final_file.save("Generated Speech.mp3")  # save file to computer
+    print("Audiofile generated. Saving...")
 
-print("Done")
+    final_file.save("Generated Speech.mp3")
+
+    print("Done")
