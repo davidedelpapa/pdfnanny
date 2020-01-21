@@ -3,7 +3,8 @@
 raw/
 Makefile
 *.mp3
-
+*.ftz
+*.bin
 
 # The following is github's python .gitignore:
 # ============================================

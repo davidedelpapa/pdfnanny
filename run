@@ -39,6 +39,12 @@ fi
 cd $BASEDIR
 export PYTHONPATH=.
 
+# Download data for fasttext if not present
+if [ ! -f "data/lid.176.ftz" ]
+then
+    wget -O data/lid.176.ftz https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz
+fi
+
 if [ "$RUN_TEST" = "1" ];
 then
     # Execute nose2 tests
