@@ -1,0 +1,51 @@
+#!/bin/sh
+BASEDIR=`dirname $0`
+RUN_TEST=
+
+usage() {
+    echo "run <python-script>\tRuns the python script in a virtual environment"
+    echo "run tests\t\tRuns tests"
+    echo "---"
+    echo "run alone calls a python shell inside the virtual env"
+}
+if [ "$1" != "" ]
+then
+    case $1 in
+        -t | --tests )          RUN_TEST=1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+    esac
+fi
+
+# Check venv
+if [ ! -d "venv/" ]; 
+then
+    # when python-3 is installed as python3:
+    # virtualenv -q venv/ --no-site-packages --python=python3 && echo "venv done."
+    # other cases:
+    virtualenv -q venv/ --no-site-packages && echo "venv done."
+fi
+
+# Check for updates virtualenv e pip
+if [ ! -f "venv/updated" -o requirements.txt -nt venv/updated ]; 
+then
+    . venv/bin/activate && pip install -r requirements.txt && touch venv/updated && echo "pip inst/update done."
+fi
+
+# Activate virtualenv and export python's variable
+. $BASEDIR/venv/bin/activate
+cd $BASEDIR
+export PYTHONPATH=.
+
+if [ "$RUN_TEST" = "1" ];
+then
+    # Execute nose2 tests
+    exec nose2 -v
+else
+    # Execute the command
+    exec python $@ 
+fi
+# Deactivate virtualenv
+deactivate 
